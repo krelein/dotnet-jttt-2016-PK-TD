@@ -16,5 +16,18 @@ namespace DemotMail
         {
             InitializeComponent();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(textBox1.Text != "" && textBox2.Text != "" && textBox4.Text != "")
+            {
+                   Message M = new Message("demotmailtest@gmail.com", "dotNetC#");
+                   M.SetUrl(textBox1.Text);
+                   M.Send(textBox4.Text, textBox2.Text);
+
+                   MessageBox.Show("Wysłano");
+            }
+        
+        }
     }
 }

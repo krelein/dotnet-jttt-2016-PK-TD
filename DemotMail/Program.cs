@@ -25,13 +25,11 @@ namespace DemotMail
           
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            // Application.Run(new Form1());
+            Application.Run(new Form1());
          
-            Message M = new Message("demotmailtest@gmail.com", "dotNetC#");
-            M.SetUrl("http://demotywatory.pl");
-            M.Send("piry3943@gmail.com", "marca");
+      
 
-            LogFile.AddLog("Koniec działania programu");
+       //     LogFile.AddLog("Koniec działania programu");
         }
     }
 
