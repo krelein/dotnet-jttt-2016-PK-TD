@@ -136,6 +136,6 @@ namespace DemotMail
                 LogFile.AddLog("Nie wysłano maila ponieważ żaden plik nie spełnieł wymagań");
             }
         }
-       
+        
     }
 }
