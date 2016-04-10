@@ -15,46 +15,55 @@ namespace DemotMail
         public Form1()
         {
             InitializeComponent();
-            listBox1.DataSource = ListaZadan.lista;
-            
+            ReloadListBox();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+           
 
             if (textBox1.Text != "" && textBox2.Text != "" && textBox4.Text != "" && textBox3.Text != "")
             {
-                Zadanie tmp=new Zadanie(textBox3.Text, textBox1.Text, textBox4.Text, textBox2.Text);
-                ListaZadan.lista.Add(tmp);
+                ListaZadanDB.DodajZadanie(textBox3.Text, textBox1.Text, textBox4.Text, textBox2.Text);          
             }
+
+            ReloadListBox();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Message M = new Message("demotmailtest@gmail.com", "dotNetC#");
-
-            foreach (var task in ListaZadan.lista)
-            {              
-                M.SetUrl(task.url);
-                M.Send(task.adres, task.tekst);        
-            }
+            ListaZadanDB.WykonajZadania();
             MessageBox.Show("Wykonano");
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            ListaZadan.Serialize();
+        //    ListaZadan.Serialize();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ListaZadan.lista.Clear();
+            ListaZadanDB.UsunZadania();
+            ReloadListBox();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            ListaZadan.Deserialize();
-            listBox1.DataSource = ListaZadan.lista;
+        //    ListaZadan.Deserialize();
+        //    listBox1.DataSource = ListaZadan.lista;
+        }
+
+        private void ReloadListBox()
+        {
+            listBox1.Items.Clear();
+
+             using (var ctx = new JtttDbContext())
+             {
+                 foreach(var zadanie in ctx.Zadania)
+                 {
+                     listBox1.Items.Add(zadanie);
+                 }
+             }
         }
     }
 }
