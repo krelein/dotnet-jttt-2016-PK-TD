@@ -12,84 +12,40 @@ namespace DemotMail
 {
     class Message
     {
-        private SmtpClient client;
+        private SmtpClient Client = new SmtpClient();
+        private List<Attachment> Attachments = new List<Attachment>();
 
-        /// <summary>
-        /// Lista wszystkich załączników
-        /// </summary>
-        private List<Attachment> att;
-        /// <summary>
-        /// Lista adresów url do plików które mają zostać załaczone w mailu
-        /// </summary>
-        private List<string> files;
-        /// <summary>
-        /// Adres url który ma zostać przeszukany np http://demotywatory.pl 
-        /// </summary>
-        string url = "";
-     
-        /// <summary>
-        /// Konstruktor wymaga podania konta na gmailu z którego mają zostac
-        /// wysłane maile oraz hasła do niego.
-        /// </summary>
-        /// <param name="GmailAcount">adres gmail</param>
-        /// <param name="pass">hasło</param>
+        public string Adres { get; set; }
+        public string About { get; set; }
+        public string Content { get; set; }
+
+
         public Message(string GmailAcount, string pass)
         {
-            att = new List<Attachment>();
-            files = new List<string>();
-            client = new SmtpClient();
-            client.Host = "smtp.gmail.com";
-            client.EnableSsl = true;
-            client.Port = 587;
-            client.Credentials = new System.Net.NetworkCredential(GmailAcount, pass);
-            client.Timeout = 10000;
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            Client.Host = "smtp.gmail.com";
+            Client.EnableSsl = true;
+            Client.Port = 587;
+            Client.Credentials = new System.Net.NetworkCredential(GmailAcount, pass);
+            Client.Timeout = 10000;
+            Client.DeliveryMethod = SmtpDeliveryMethod.Network;
         }
-
-        /// <summary>
-        /// Utawia adres url
-        /// </summary>
-        /// <param name="_url"></param>
-        public void SetUrl(string _url)
-        {
-            url=_url;
-        }
-       
-        /// <summary>
-        /// Zwraca nazwę pliku z adresu url np. dla aaa/bbb/ccc.jpg zwróci ccc.jpg 
-        /// </summary>
-        /// <param name="path">adres url</param>
-        /// <returns>Nazwa pliku</returns>
         private string GetNameFromPath(string path)
         {
             string[] Separator = new string[] { "/" };
             string[] name = (path.Split(Separator, StringSplitOptions.None));
             return name[name.Length - 1];
         }
-   
-        /// <summary>
-         /// Dodaje załączniki do listy załączników - att
-         /// </summary>
-         /// <param name="phrase">fraza jaką mają zawierać opisy pod obrazkami
-         /// aby zostały wysłane</param>
-        private void GetAttachments(string phrase)
+        public void GetAttachmentsUrl(List<string> Urls)
         {
-         
-            PicturesFromHtml pictures = new PicturesFromHtml(url);
-            files.Clear();
-            att.Clear();
-            pictures.AdFileIf(files,phrase); // dodaje adresy plików do wysania pod kątem szukanej frazy
-
             LogFile.AddLog("Rozpoczęto dodawanie załączników");
-            foreach (string file in files)
+            foreach (string file in Urls)
             {
                 try
-                {   
- 
-                    var name  = GetNameFromPath(file);
-                    var stream = new WebClient().OpenRead(file); 
+                {
+                    var name = GetNameFromPath(file);
+                    var stream = new WebClient().OpenRead(file);
                     Attachment data = new Attachment(stream, name);
-                    att.Add(data);
+                    Attachments.Add(data);
 
                     LogFile.AddLog("Prawidłowo dodano załącznik - " + name);
                 }
@@ -100,31 +56,20 @@ namespace DemotMail
             }
             LogFile.AddLog("Zakończono dodawanie załączników");
         }
- 
-        /// <summary>
-        /// Wysyła maila na podane konto z załącznikami spełniającymi konkretne założenia
-        /// </summary>
-        /// <param name="to">Do kogo ma zostać wysłany mail</param>
-        /// <param name="phrase">fraza jak ma wystąpić przy obrazku</param>
-        public void Send(string to, string phrase)
+        public void Send()
         {
-            
-            MailMessage mail = new MailMessage("demotmailtest@gmail.com", to, "DemotMessage", "Your daily demot report. Selected phrase: " + phrase);
-            mail.BodyEncoding = UTF8Encoding.UTF8;
-            mail.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
-
-            GetAttachments(phrase); // zbiera załączniki do listy
-
-            LogFile.AddLog("Rozpoczęto operację wysyłania maila");
-
-            if (att.Capacity != 0)
+            if (Adres != "")
             {
-                foreach (Attachment data in att) // dodaje załączniki do maila
+                MailMessage mail = new MailMessage("demotmailtest@gmail.com", Adres, About, Content);
+                mail.BodyEncoding = UTF8Encoding.UTF8;
+                mail.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+
+                foreach (Attachment data in Attachments) // dodaje załączniki do maila
                     mail.Attachments.Add(data);
+
                 try
                 {
-                    client.Send(mail);
-                    LogFile.AddLog("Wysłano mail");
+                    Client.Send(mail);
                 }
                 catch
                 {
@@ -133,9 +78,10 @@ namespace DemotMail
             }
             else
             {
-                LogFile.AddLog("Nie wysłano maila ponieważ żaden plik nie spełnieł wymagań");
+                LogFile.AddLog("Próba wysłania maila nie powiodła sie. Brak adresu");
             }
         }
-        
+
+
     }
 }

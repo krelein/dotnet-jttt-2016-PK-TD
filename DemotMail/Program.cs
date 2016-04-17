@@ -10,7 +10,7 @@ using System.IO;
 using System.ComponentModel;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
-
+using System.Net;
 
 namespace DemotMail
 {
@@ -20,10 +20,10 @@ namespace DemotMail
         static void Main()
         {     
             LogFile.StartLog();
-          
+            WebRequest.DefaultWebProxy = null; 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());  
+            Application.Run(new Form1());
         }
     }
 

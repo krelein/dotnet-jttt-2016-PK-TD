@@ -12,19 +12,16 @@ namespace DemotMail
     {
         private readonly string _url;
 
+
         public PicturesFromHtml(string url)
         {
             this._url = url;
         }
-
-        /// <summary>
-        /// Przeszukuje podaną stronę internetową i dodaje adresy plików do załaczenia do listy files
-        /// </summary>
-        /// <param name="files"></param>
-        /// <param name="phrase"></param>
-        public void AdFileIf(List<string> files, string phrase)
+        public List<string> AdFileIf(string phrase)
         {
+            List<string> files = new List<string>();
             LogFile.AddLog("Rozpoczęto przeszukiwanie strony w poszukiwaniu plików do załączenia");
+           
             var wc = new WebClient();
             wc.Encoding = Encoding.UTF8;
             var html = System.Net.WebUtility.HtmlDecode(wc.DownloadString(_url));
@@ -43,6 +40,7 @@ namespace DemotMail
                 }
             }
 
+            return files;
         }
 
     }

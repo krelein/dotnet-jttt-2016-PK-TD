@@ -20,13 +20,40 @@ namespace DemotMail
 
         private void button1_Click(object sender, EventArgs e)
         {
-           
-
-            if (textBox1.Text != "" && textBox2.Text != "" && textBox4.Text != "" && textBox3.Text != "")
+            Zadanie Zad = new Zadanie() { Nazwa = textBox3.Text};
+            Warunek W = new Warunek();
+            Akcja A = new Akcja();
+            // Warunki
+            if(tabPage1 == tabControl1.SelectedTab)
             {
-                ListaZadanDB.DodajZadanie(textBox3.Text, textBox1.Text, textBox4.Text, textBox2.Text);          
+                StronaWwwDane Str = new StronaWwwDane();
+                Str.Url = textBox1.Text;
+                Str.Tekst = textBox2.Text;
+                W.StronaWwwDane = Str;
             }
-
+            else if (tabPage2 == tabControl1.SelectedTab)
+            {
+                PogodaDane Pog = new PogodaDane();
+                Pog.Miasto = textBox5.Text;            
+                Pog.Temperatura = Int16.Parse(textBox6.Text);
+                W.PogodaDane = Pog;
+            }
+            // Akcje
+            if (tabPage3 == tabControl2.SelectedTab)
+            {
+                MailDane Mai = new MailDane();
+                Mai.Adres = textBox4.Text;
+                A.MailDane = Mai;
+            }
+            else if (tabPage4 == tabControl2.SelectedTab)
+            {
+                KomunikatDane Kom = new KomunikatDane();
+                Kom.CzyWyswietlic = true;
+                A.KomunikatDane = Kom;
+            }
+            Zad.Warunek = W;
+            Zad.Akcja = A;
+            ListaZadanDB.DodajZadanie(Zad);
             ReloadListBox();
         }
 
@@ -59,11 +86,17 @@ namespace DemotMail
 
              using (var ctx = new JtttDbContext())
              {
-                 foreach(var zadanie in ctx.Zadania)
+                 foreach (var zadanie in ctx.Zadania)
                  {
-                     listBox1.Items.Add(zadanie);
+                     listBox1.Items.Add(zadanie.ToString());
                  }
              }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            PogodaZaOknem pogoda = new PogodaZaOknem();
+            pogoda.Show();
         }
     }
 }

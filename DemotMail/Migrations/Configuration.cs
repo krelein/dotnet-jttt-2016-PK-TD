@@ -10,6 +10,7 @@ namespace DemotMail.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+            ContextKey = "DemotMail.JtttDbContext";
         }
 
         protected override void Seed(DemotMail.JtttDbContext context)

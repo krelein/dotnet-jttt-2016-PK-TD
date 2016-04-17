@@ -11,11 +11,11 @@ namespace DemotMail
     {
         private const string Name = "jttt.log";
 
+
         public static void StartLog()
         {
             File.WriteAllText(Name, DateTime.Now.TimeOfDay.ToString() + ": " + "Start programu" + Environment.NewLine);
         }
-
         public static void AddLog(string text)
         {
             File.AppendAllText(Name, DateTime.Now.TimeOfDay.ToString() + ": " + text + Environment.NewLine);
